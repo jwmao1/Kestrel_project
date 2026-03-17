@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KESTREL</title>
+  <meta name="description" content="KESTREL is an evidence-grounded refinement framework for reducing visual hallucination and overconfident reasoning in LVLMs.">
+  <link rel="icon" href="./assets/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="page">
+    <section class="title-block">
+      <div class="title-row">
+        <img src="./assets/icon.png" alt="Kestrel icon" class="title-icon">
+        <h1>KESTREL</h1>
+      </div>
+      <p class="subtitle">
+        Grounding Self-Refinement for LVLM Hallucination Mitigation
+      </p>
+      <div class="authors">
+        <a href="https://jwmao1.github.io/mjw/" target="_blank" rel="noreferrer">Jiawei Mao<sup>1</sup></a>,
+        <a href="https://g-h-chen.github.io/" target="_blank" rel="noreferrer">Hardy Chen<sup>1</sup></a>,
+        <a href="https://www.haqtu.me/" target="_blank" rel="noreferrer">Haoqin Tu<sup>1</sup></a>,
+        <a href="https://scholar.google.com/citations?user=Bo9xeqMAAAAJ" target="_blank" rel="noreferrer">Yuhan Wang<sup>1</sup></a>,
+        <a href="https://letian2003.github.io/letian.github.io/" target="_blank" rel="noreferrer">Letian Zhang<sup>1</sup></a>,
+        <a href="https://zheng80.github.io/" target="_blank" rel="noreferrer">Zeyu Zheng<sup>2</sup></a>,
+        <a href="https://www.huaxiuyao.io/" target="_blank" rel="noreferrer">Huaxiu Yao<sup>4</sup></a>,
+        <a href="https://scholar.google.com/citations?user=GgD-B68AAAAJ&hl=en" target="_blank" rel="noreferrer">Zirui Wang<sup>3</sup></a>,
+        <a href="https://cihangxie.github.io/" target="_blank" rel="noreferrer">Cihang Xie<sup>1</sup></a>,
+        <a href="https://yuyinzhou.github.io/" target="_blank" rel="noreferrer">Yuyin Zhou<sup>1</sup></a>
+      </div>
+      <p class="affiliations">
+        <a href="https://ucsc-vlaa.github.io/" target="_blank" rel="noreferrer"><sup>1</sup>UC Santa Cruz</a>
+        &nbsp;&nbsp;
+        <a href="https://bair.berkeley.edu/" target="_blank" rel="noreferrer"><sup>2</sup>UC Berkeley</a>
+        &nbsp;&nbsp;
+        <a href="https://www.apple.com/" target="_blank" rel="noreferrer"><sup>3</sup>Apple</a>
+        &nbsp;&nbsp;
+        <a href="https://www.cs.unc.edu/" target="_blank" rel="noreferrer"><sup>4</sup>UNC-Chapel Hill</a>
+      </p>
+      <div class="resource-row">
+        <a href="https://example.com/paper" class="action-button resource-button" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="button-icon">
+            <path d="M6 3h8l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M14 3v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M8.5 12.5h7M8.5 16h7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span>Paper</span>
+        </a>
+        <a href="https://example.com/code" class="action-button resource-button" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="button-icon">
+            <path d="M12 .7a12 12 0 0 0-3.8 23.4c.6.1.8-.2.8-.6V21c-3.4.7-4.1-1.4-4.1-1.4-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.8 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6A4.7 4.7 0 0 1 6.5 8c-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.1a4.7 4.7 0 0 1 1.2 3.2c0 4.7-2.8 5.7-5.5 6 .4.3.9 1 .9 2.1v3.1c0 .4.2.7.8.6A12 12 0 0 0 12 .7Z" fill="currentColor"/>
+          </svg>
+          <span>Code</span>
+        </a>
+      </div>
+      <div class="action-row">
+        <a href="#abstract" class="action-button">Abstract</a>
+        <a href="#paradigm" class="action-button">Paradigm</a>
+        <a href="#framework" class="action-button">Framework</a>
+        <a href="#examples" class="action-button">Examples</a>
+        <a href="#quantitative-results" class="action-button">Experiment</a>
+        <a href="#bibtex" class="action-button">BibTeX</a>
+      </div>
+    </section>
+
+    <section class="hero-image">
+      <img src="./assets/teaser.jpg" alt="KESTREL teaser">
+    </section>
+
+    <section id="abstract" class="content-section">
+      <h2>Abstract</h2>
+      <p>
+        Large vision-language models (LVLMs) have become increasingly strong but remain prone to hallucinations in
+        multimodal tasks, which significantly narrows their deployment. As training these LVLMs to avoid hallucinations
+        becomes prohibitively expensive for larger models, training-free methods offer a cheap and flexible solution to
+        this problem, yet existing approaches based on decoding or tool use often bring limited gains and/or weak
+        interpretability.
+        We propose Kestrel, a training-free framework for LVLM hallucination mitigation that combines an explicit
+        visual-grounding agent with evidence-verified self-refinement mechanism. In detail, Kestrel first collects
+        explicit visual evidence and converts tool outputs into reusable and structured textual evidence. Second, to
+        take full advantage of these evidence, Kestrel verifies them via an LVLM judge for evidence checking, then
+        iteratively self-refine answers based on verified evidence to reduce the risk of over-correction.
+        Extensive experiments show that Kestrel improves performance over strong baselines across hallucination
+        benchmarks (e.g., average +3.31% on POPE and +28.34 on MME-Hallucination with Qwen3-VL), while providing
+        transparent verification traces for hallucination diagnosis and analysis --- e.g., both the integrated
+        self-refinement module and grounding agent contributing an average +2.0% gain on POPE.
+      </p>
+    </section>
+
+    <section id="paradigm" class="content-section">
+      <h2>Paradigm Comparison</h2>
+      <p class="section-note">
+        Compared with prior strategies, KESTREL emphasizes external grounding tools, deterministic evidence, and verification-driven self-refinement.
+      </p>
+      <figure class="figure-block">
+        <img src="./assets/paradigm.jpg" alt="Paradigm comparison">
+      </figure>
+    </section>
+
+    <section id="framework" class="content-section">
+      <h2>Framework</h2>
+      <p class="section-note">
+        KESTREL follows an agent grounding refinement loop: intialization, agent grounding, claim-level verification, and self-refinement.
+      </p>
+      <figure class="figure-block">
+        <img src="./assets/method.jpg" alt="KESTREL framework">
+      </figure>
+      <div class="text-panel">
+        <p>
+          Given an image-question pair, <em>Kestrel</em> follows a training-free four-stage pipeline for LVLM
+          hallucination mitigation: <strong>(1) Initialization</strong>, which obtains an initial answer and rewrites it
+          into question-aligned verifiable claims with associated visual entities and claim types;
+          <strong>(2) Agent Grounding</strong>, which invokes an external SAM3-based grounding agent to collect explicit
+          visual evidence (e.g., segmentation overlays, boxes, and crop-and-zoom views) and convert them into structured
+          textual evidence; <strong>(3) Claim-level Verification</strong>, which verifies each claim against the cited
+          evidence to produce claim-wise verdicts, confidence scores, and a top-level verification decision; and
+          <strong>(4) Self-Refinement</strong>, which performs evidence-gated answer updating based on the current and
+          previous verification traces.
+        </p>
+      </div>
+    </section>
+
+    <section id="examples" class="content-section">
+      <h2>Illustrative Examples</h2>
+      <p class="section-note">
+        Representative cases covering object existence, counting, attributes, and spatial or relational reasoning.
+      </p>
+      <div class="carousel" aria-label="Illustrative example carousel">
+        <div class="carousel-track">
+          <figure class="carousel-slide">
+            <img src="./assets/experiment.jpg" alt="Example cases">
+          </figure>
+          <figure class="carousel-slide">
+            <img src="./assets/experiment_app.jpg" alt="Application examples 1">
+          </figure>
+          <figure class="carousel-slide">
+            <img src="./assets/experiment_app1.jpg" alt="Application examples 2">
+          </figure>
+        </div>
+        <div class="carousel-dots" aria-hidden="true">
+          <button class="carousel-dot is-active" data-slide="0"></button>
+          <button class="carousel-dot" data-slide="1"></button>
+          <button class="carousel-dot" data-slide="2"></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Correction Behavior</h2>
+      <p class="section-note">
+        A high-level view of how initial answers are preserved, corrected, or over-corrected after refinement.
+      </p>
+      <figure class="figure-block narrow-figure">
+        <img src="./assets/bar.jpg" alt="Correction behavior summary">
+      </figure>
+    </section>
+
+    <section id="quantitative-results" class="content-section">
+      <h2>Quantitative Results</h2>
+
+      <h3 class="subheading">POPE</h3>
+      <p class="section-note">
+        Higher accuracy (&uarr;) indicates better performance. Best results are bolded and second-best results are underlined.
+      </p>
+      <div class="table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>Backbone</th>
+              <th>Method</th>
+              <th>MS-COCO Rand.</th>
+              <th>MS-COCO Pop.</th>
+              <th>MS-COCO Adv.</th>
+              <th>A-OKVQA Rand.</th>
+              <th>A-OKVQA Pop.</th>
+              <th>A-OKVQA Adv.</th>
+              <th>GQA Rand.</th>
+              <th>GQA Pop.</th>
+              <th>GQA Adv.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="8">Qwen3-VL</td>
+              <td>Baseline</td><td>89.00</td><td>86.92</td><td>86.20</td><td>92.36</td><td>86.67</td><td>81.87</td><td>90.70</td><td>83.63</td><td>81.50</td>
+            </tr>
+            <tr>
+              <td>Qwen3-VL agent</td><td><span class="second">91.03</span></td><td>88.06</td><td>86.13</td><td>92.87</td><td>85.20</td><td>78.03</td><td>91.41</td><td>81.81</td><td>78.30</td>
+            </tr>
+            <tr>
+              <td>VCD</td><td>90.40</td><td>88.80</td><td>87.41</td><td><span class="second">93.53</span></td><td>87.86</td><td>82.00</td><td>91.56</td><td>85.76</td><td>81.93</td>
+            </tr>
+            <tr>
+              <td>Woodpecker</td><td>89.97</td><td>88.03</td><td>87.10</td><td>93.23</td><td>88.90</td><td>83.33</td><td>91.27</td><td>86.27</td><td>82.77</td>
+            </tr>
+            <tr>
+              <td>RITUAL</td><td>86.20</td><td>83.67</td><td>82.27</td><td>87.67</td><td>83.50</td><td>77.76</td><td>86.86</td><td>82.30</td><td>78.23</td>
+            </tr>
+            <tr>
+              <td>OPERA</td><td>90.50</td><td><span class="second">88.83</span></td><td><span class="second">87.50</span></td><td><strong>93.76</strong></td><td><span class="second">89.50</span></td><td><span class="second">83.86</span></td><td><strong>91.80</strong></td><td><span class="second">87.11</span></td><td><span class="second">83.30</span></td>
+            </tr>
+            <tr>
+              <td>DeGF</td><td>90.33</td><td>88.16</td><td>86.90</td><td>92.96</td><td>87.70</td><td>82.61</td><td>91.13</td><td>83.79</td><td>82.00</td>
+            </tr>
+            <tr class="ours-row">
+              <td>Kestrel (ours)</td><td><strong>91.53</strong></td><td><strong>89.30</strong></td><td><strong>87.53</strong></td><td>93.46</td><td><strong>91.73</strong></td><td><strong>86.76</strong></td><td><span class="second">91.67</span></td><td><strong>90.33</strong></td><td><strong>86.27</strong></td>
+            </tr>
+            <tr>
+              <td rowspan="7">InternVL3.5</td>
+              <td>Baseline</td><td>90.77</td><td>88.10</td><td>85.73</td><td>92.67</td><td>87.83</td><td>81.53</td><td>89.77</td><td>84.10</td><td>81.31</td>
+            </tr>
+            <tr>
+              <td>VCD</td><td>91.35</td><td><span class="second">89.22</span></td><td><span class="second">87.60</span></td><td>92.87</td><td>89.73</td><td>83.73</td><td><strong>91.60</strong></td><td>85.07</td><td><span class="second">83.37</span></td>
+            </tr>
+            <tr>
+              <td>Woodpecker</td><td>91.20</td><td>89.11</td><td>87.50</td><td><strong>93.73</strong></td><td><span class="second">89.80</span></td><td>84.00</td><td>91.43</td><td>85.16</td><td>83.26</td>
+            </tr>
+            <tr>
+              <td>RITUAL</td><td><strong>91.60</strong></td><td>89.03</td><td>87.48</td><td><span class="second">93.71</span></td><td>89.75</td><td>83.90</td><td>91.39</td><td>85.18</td><td>83.29</td>
+            </tr>
+            <tr>
+              <td>OPERA</td><td><span class="second">91.53</span></td><td>89.18</td><td>87.55</td><td>93.55</td><td>89.79</td><td>83.81</td><td>91.45</td><td><span class="second">85.20</span></td><td>83.31</td>
+            </tr>
+            <tr>
+              <td>DeGF</td><td>91.43</td><td>89.12</td><td>87.37</td><td>93.39</td><td>89.68</td><td><span class="second">84.11</span></td><td>91.48</td><td>85.06</td><td>83.20</td>
+            </tr>
+            <tr class="ours-row">
+              <td>Kestrel (ours)</td><td>91.27</td><td><strong>89.27</strong></td><td><strong>88.10</strong></td><td>93.57</td><td><strong>91.80</strong></td><td><strong>87.13</strong></td><td><span class="second">91.57</span></td><td><strong>89.87</strong></td><td><strong>86.53</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="subheading">MME-Hallucination</h3>
+      <p class="section-note">
+        Higher scores (&uarr;) indicate better performance. We report both backbone-specific tables below.
+      </p>
+
+      <h4 class="miniheading">Qwen3-VL</h4>
+      <div class="table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>Backbone</th>
+              <th>Method</th>
+              <th>Existence</th>
+              <th>Count</th>
+              <th>Position</th>
+              <th>Color</th>
+              <th>MME Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="7">Qwen3-VL</td><td>Baseline</td><td><span class="second">195.00</span></td><td>175.00</td><td><span class="second">168.33</span></td><td>193.33</td><td>731.66</td></tr>
+            <tr><td>Qwen3-VL agent</td><td><strong>200.00</strong></td><td>181.67</td><td><span class="second">168.33</span></td><td>193.33</td><td><span class="second">743.33</span></td></tr>
+            <tr><td>VCD</td><td><span class="second">195.00</span></td><td>180.00</td><td><span class="second">168.33</span></td><td>193.33</td><td>736.66</td></tr>
+            <tr><td>Woodpecker</td><td><span class="second">195.00</span></td><td>173.33</td><td><span class="second">168.33</span></td><td><span class="second">195.00</span></td><td>731.66</td></tr>
+            <tr><td>RITUAL</td><td><span class="second">195.00</span></td><td>180.00</td><td><span class="second">168.33</span></td><td>193.33</td><td>736.66</td></tr>
+            <tr><td>OPERA</td><td><span class="second">195.00</span></td><td>180.00</td><td><span class="second">168.33</span></td><td><strong>200.00</strong></td><td><span class="second">743.33</span></td></tr>
+            <tr class="ours-row"><td>Kestrel (ours)</td><td><strong>200.00</strong></td><td><strong>186.67</strong></td><td><strong>180.00</strong></td><td>193.33</td><td><strong>760.00</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4 class="miniheading">InternVL3.5</h4>
+      <div class="table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>Backbone</th>
+              <th>Method</th>
+              <th>Existence</th>
+              <th>Count</th>
+              <th>Position</th>
+              <th>Color</th>
+              <th>MME Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="7">InternVL3.5</td><td>Baseline</td><td><strong>200.00</strong></td><td><span class="second">175.00</span></td><td><span class="second">175.00</span></td><td><span class="second">193.33</span></td><td><span class="second">743.33</span></td></tr>
+            <tr><td>VCD</td><td><strong>200.00</strong></td><td><span class="second">175.00</span></td><td><span class="second">175.00</span></td><td><span class="second">193.33</span></td><td>736.66</td></tr>
+            <tr><td>Woodpecker</td><td><strong>200.00</strong></td><td>166.67</td><td>161.67</td><td>186.67</td><td>715.01</td></tr>
+            <tr><td>RITUAL</td><td><span class="second">195.00</span></td><td><span class="second">175.00</span></td><td><span class="second">175.00</span></td><td><span class="second">193.33</span></td><td>738.33</td></tr>
+            <tr><td>OPERA</td><td><span class="second">195.00</span></td><td>173.33</td><td><span class="second">175.00</span></td><td><strong>195.00</strong></td><td>738.33</td></tr>
+            <tr><td>DeGF</td><td><span class="second">195.00</span></td><td><span class="second">175.00</span></td><td>168.33</td><td>188.33</td><td>726.66</td></tr>
+            <tr class="ours-row"><td>Kestrel (ours)</td><td><strong>200.00</strong></td><td><strong>186.67</strong></td><td><strong>181.67</strong></td><td><strong>195.00</strong></td><td><strong>763.34</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="bibtex" class="content-section">
+      <h2>BibTeX</h2>
+      <p class="section-note">
+        If you find our work helpful for your research, please consider giving a citation &#128195;
+      </p>
+      <pre class="bibtex-block"><code>@misc{mao2024story_adapter,
+  title={{Story-Adapter: A Training-free Iterative Framework for Long Story Visualization}},
+  author={Mao, Jiawei and Huang, Xiaoke and Xie, Yunfei and Chang, Yuanqi and Hui, Mude and Xu, Bingjie and Zhou, Yuyin},
+  journal={arXiv},
+  volume={abs/2410.06244},
+  year={2024},
+}</code></pre>
+    </section>
+  </main>
+  <script>
+    (function () {
+      const carousel = document.querySelector('.carousel');
+      if (!carousel) return;
+
+      const track = carousel.querySelector('.carousel-track');
+      const dots = Array.from(carousel.querySelectorAll('.carousel-dot'));
+      const total = dots.length;
+      let index = 0;
+
+      function render(nextIndex) {
+        index = (nextIndex + total) % total;
+        track.style.transform = `translateX(-${index * 100}%)`;
+        dots.forEach((dot, dotIndex) => {
+          dot.classList.toggle('is-active', dotIndex === index);
+        });
+      }
+
+      dots.forEach((dot, dotIndex) => {
+        dot.addEventListener('click', () => render(dotIndex));
+      });
+
+      setInterval(() => render(index + 1), 3200);
+    })();
+  </script>
+</body>
+</html>
